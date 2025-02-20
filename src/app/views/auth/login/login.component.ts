@@ -11,6 +11,7 @@ import { AuthService } from '../../../service/auth/AuthService';
 import { AuthenticationRequest } from '../../../models/requests/AuthenticationRequest';
 import { ToastrService } from '../../../toastr.service';
 import { catchError, throwError } from 'rxjs';
+import { TokenService } from '../../../service/auth/TokenService';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,8 @@ export class LoginComponent {
   loginForm: FormGroup;
 
   constructor(private fb: FormBuilder, private router: Router,
-    private authService: AuthService, private toastr: ToastrService) {
+    private authService: AuthService, private toastr: ToastrService,
+    private tokenService: TokenService  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
@@ -59,8 +61,8 @@ export class LoginComponent {
           })
         ).subscribe(data => {
           console.log('Login Successful:', data);
-          localStorage.setItem('token', data.token);
-          //TODO navigate to main page! this.router.navigate(['/register']); // Redirect to dashboard
+          this.tokenService.token = data.token as string;
+          this.router.navigate(['/main']);
         })
     }
   }

@@ -1,0 +1,50 @@
+<div class="activate-container">
+  <mat-card class="activate-card">
+    <mat-card-header class="header">
+      <mat-card-title-group class="headers-group" >
+        <mat-card-title>Activate account</mat-card-title>
+        <mat-card-subtitle>Activation code is sent to:</mat-card-subtitle>
+        <p>{{email}}</p>
+      </mat-card-title-group>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="otpForm" (ngSubmit)="onActivateAccount()">
+        <div class="auth-pin-wrap">
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="zero" #zero type="text" required maxlength="1"
+              (input)="moveFocus($event, first)" (paste)="handlePaste($event)" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="first" #first type="text" required maxlength="1"
+              (input)="moveFocus($event, second)" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="second" #second type="text" required maxlength="1"
+              (input)="moveFocus($event, third)" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="third" #third type="text" required maxlength="1"
+              (input)="moveFocus($event, fourth)" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="fourth" #fourth type="text" required maxlength="1"
+              (input)="moveFocus($event, fifth)" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <input matInput formControlName="fifth" #fifth type="text" required maxlength="1" />
+          </mat-form-field>
+        </div>
+
+        <button mat-flat-button class="full-width" (click)="onActivateAccount()" [disabled]="otpForm.invalid">
+          Activate account
+        </button>
+      </form>
+
+    </mat-card-content>
+  </mat-card>
+</div>

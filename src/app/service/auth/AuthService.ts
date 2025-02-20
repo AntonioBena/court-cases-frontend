@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { RegistrationRequest } from "../../models/requests/RegistrationRequest";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Observable } from "rxjs/internal/Observable";
 import { AuthenticationRequest } from "../../models/requests/AuthenticationRequest";
 
@@ -22,4 +22,8 @@ export class AuthService{
       return this.http.post<any>(`${this.baseUrl}/authenticate`, authenticationRequest);
     }
 
+    public activateAccount(code: string): Observable<any>{
+      let p = new HttpParams().set("activationCode",code);
+      return this.http.get<any>(`${this.baseUrl}/activate-account`, {params: p})
+    }
 }

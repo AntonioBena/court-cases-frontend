@@ -9,6 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../service/auth/AuthService';
 import { AuthenticationRequest } from '../../../models/requests/AuthenticationRequest';
+import { ToastrService } from '../../../toastr.service';
+import { catchError, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -27,11 +29,16 @@ export class LoginComponent {
 
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private router: Router,
+    private authService: AuthService, private toastr: ToastrService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]]
     });
+  }
+
+  onRegisterLink(){
+    this.router.navigate(['/register']);
   }
 
   onLogin() {
@@ -40,19 +47,25 @@ export class LoginComponent {
       auth.email = this.loginForm.value.email;
       auth.password = this.loginForm.value.password;
 
-      console.log("loginReq: " + JSON.stringify(auth))
-      this.authService.login(auth).subscribe({
-        next: (response) => {
-          console.log('Login Successful:', response);
-          localStorage.setItem('token', response.token); // Store token
-          //this.router.navigate(['/dashboard']); // Redirect to dashboard
-        },
-        error: (err) => {
-          console.error('Login Failed:', err);
-          alert('Invalid credentials'); // Show alert on error //TODO rijesi ovo
-        }
-      });
+      this.authService.login(auth)
+        .pipe(
+          catchError(error => {
+            if(error.status === 400){
+            this.showToast('error', 'Please check email and password');
+            }
+            console.error('Login error:');
+            return throwError(
+              () => new Error('Login error '+JSON.stringify(error)));
+          })
+        ).subscribe(data => {
+          console.log('Login Successful:', data);
+          localStorage.setItem('token', data.token);
+          //TODO navigate to main page! this.router.navigate(['/register']); // Redirect to dashboard
+        })
     }
   }
 
+  showToast(type: string, error:string) {
+    this.toastr.showToast(type, "Login failed! " + error, "top-right", true);
+  }
 }

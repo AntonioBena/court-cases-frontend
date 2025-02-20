@@ -15,11 +15,12 @@
           <input matInput formControlName="password" type="password" required />
         </mat-form-field>
 
-        <button mat-raised-button color="primary" class="full-width" [disabled]="loginForm.invalid">Login</button>
+        <button mat-flat-button class="full-width" [disabled]="loginForm.invalid">Login</button>
+
       </form>
     </mat-card-content>
     <mat-card-actions class="register-link">
-      <a routerLink="/register">Don't have an account? Register</a>
+      <a (click)="onRegisterLink()">Don't have an account? Register</a>
     </mat-card-actions>
   </mat-card>
 </div>

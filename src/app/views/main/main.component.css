@@ -1,0 +1,58 @@
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.toolbar{
+  background-color: #FFFFFF;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-container {
+  display: flex;
+  justify-content: center; /* Center card horizontally */
+  align-items: center; /* Center card vertically */
+  height: 100vh; /* Full height */
+  background-color: #f5f5f5;
+}
+
+.card {
+  width: 80%; /* Set card width */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content inside card */
+  max-width: 1200px; /* Ensure card doesn't stretch too much */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: #FFFFFF;
+}
+
+#mat-menu{
+  background-color: #FFFFFF;
+}
+
+.demo-button-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.table-container {
+  width: 100%; /* Ensure the table doesn't overflow */
+  overflow-x: auto; /* Allow horizontal scrolling if needed */
+}
+
+.demo-table {
+  background-color: #FFFFFF;
+  width: 100%; /* Table takes full width */
+  table-layout: fixed; /* Ensure the table has a fixed layout */
+}
+
+.paginator{
+  background-color: #FFFFFF;
+}
+
+.mat-elevation-z8 {
+  border-radius: 8px;
+}

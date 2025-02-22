@@ -1,0 +1,87 @@
+<mat-toolbar class="toolbar">
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Court Case Revision</span>
+  <span class="example-spacer"></span>
+
+  <button (click)="onLogout()" mat-icon-button class="example-icon" aria-label="Example icon-button with share icon">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="card-container">
+  <mat-card class="card">
+    <mat-card-content>
+
+      <div class="demo-button-container">
+        <button mat-flat-button color="primary" class="demo-button" (click)="createCase()" >
+          Add New Case
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 demo-table">
+          <!--
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+            <td mat-cell *matCellDef="let caseItem">{{ caseItem.id }}</td>
+          </ng-container> -->
+
+          <ng-container matColumnDef="caseLabel">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Label</th>
+            <td mat-cell *matCellDef="let caseItem">{{ caseItem.caseLabel }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="caseStatus">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+            <td mat-cell *matCellDef="let caseItem">{{ caseItem.caseStatus }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="court">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Court</th>
+            <td mat-cell *matCellDef="let caseItem">{{ caseItem.court.courtName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="resolvingDecisionLabel">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Resolving decision</th>
+            <td mat-cell *matCellDef="let caseItem">{{ caseItem.resolvingDecisionLabel }}</td>
+          </ng-container>
+
+          <!-- Actions Column with Menu -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+            <td mat-cell *matCellDef="let caseItem">
+              <!-- Icon Button to trigger menu -->
+              <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+
+              <!-- Menu -->
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="viewCaseDetails(caseItem)">
+                  <mat-icon>info</mat-icon>
+                  <span>See Case Details</span>
+                </button>
+                <button mat-menu-item (click)="updateCase(caseItem)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Update Case</span>
+                </button>
+                <button mat-menu-item disabled>
+                  <mat-icon>delete</mat-icon>
+                  <span>Delete Case</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <!-- Header and Row Definitions -->
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator class="paginator" [pageSize]="15"></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

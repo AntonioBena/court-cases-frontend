@@ -1,0 +1,109 @@
+<h1 mat-dialog-title>Update Case Details</h1>
+
+<mat-dialog-content>
+  <form [formGroup]="caseForm" (ngSubmit)="onSubmit()">
+
+    <!-- Case Details Section (First Row) -->
+    <h3>Case Details</h3>
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Case Label</mat-label>
+        <input matInput formControlName="caseLabel" />
+        <mat-error *ngIf="caseForm.controls['caseLabel'].hasError('required')">
+          Case Label is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Case Status</mat-label>
+        <mat-select formControlName="caseStatus">
+          <mat-option *ngFor="let status of ['IN_PROGRESS', 'RESOLVED']" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="caseForm.controls['caseStatus'].hasError('required')">
+          Case Status is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Case Description</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+        <mat-error *ngIf="caseForm.controls['description'].hasError('required')">
+          Case Description is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Resolving Decision Label</mat-label>
+        <mat-select formControlName="resolvingDecisionLabel">
+          <mat-option *ngFor="let decision of availableDecisions" [value]="decision.decisionLabel">
+            {{ decision.decisionLabel }}
+          </mat-option>
+          <mat-option value="">None</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Court Details Section (Second Row) -->
+    <h3>Court Details</h3>
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Court Name</mat-label>
+        <input matInput formControlName="courtName" />
+        <mat-error *ngIf="caseForm.controls['courtName'].hasError('required')">
+          Court Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Court Address</mat-label>
+        <input matInput formControlName="courtAddress" />
+        <mat-error *ngIf="caseForm.controls['courtAddress'].hasError('required')">
+          Court Address is required
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+
+  <form [formGroup]="decisionForm">
+    <!-- Decision Section (Third Row) -->
+    <h3>Create New Decision</h3>
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Decision Label</mat-label>
+        <input matInput formControlName="decisionLabel" />
+
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Decision Description</mat-label>
+        <textarea matInput formControlName="decisionDescription"></textarea>
+
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Decision Type</mat-label>
+        <mat-select formControlName="decisionType">
+          <mat-option *ngFor="let type of availableDecisionTypes" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Decision Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="decisionDate" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </form>
+
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!caseForm.valid">Update Case</button>
+  </div>
+</mat-dialog-content>

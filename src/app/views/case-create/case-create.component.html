@@ -1,0 +1,30 @@
+<h1 mat-dialog-title>Create New Case</h1>
+
+<mat-dialog-content>
+  <form [formGroup]="createForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Case Label</mat-label>
+      <input matInput formControlName="caseLabel" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Case Description</mat-label>
+      <input matInput formControlName="description" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Court Name</mat-label>
+      <input matInput formControlName="courtName" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Court Address</mat-label>
+      <input matInput formControlName="courtAddress" required />
+    </mat-form-field>
+
+  </form>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!createForm.valid" (click)="createNewCase()">Create New Case</button>
+  </div>
+</mat-dialog-content>

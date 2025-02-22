@@ -4,7 +4,7 @@ import { AuthGuard } from './service/auth/auth.guard';
 import { LoginComponent } from './views/auth/login/login.component';
 import { RegisterComponent } from './views/auth/register/register.component';
 import { AcivateComponent } from './views/auth/acivate/acivate.component';
-import { MainComponent } from './views/auth/main/main.component';
+import { MainComponent } from './views/main/main.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent }, // Login page is the default

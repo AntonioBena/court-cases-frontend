@@ -1,34 +1,29 @@
-/* Basic styles for the form inside the dialog */
-mat-form-field {
-  width: 100%;
-  margin-bottom: 16px;
-}
-
-mat-dialog-actions {
+.dialog-content {
   display: flex;
-  justify-content: space-between;
-  padding-top: 16px;
+  flex-wrap: nowrap;
+  max-width: 1200px;
 }
 
-button.mat-button,
-button.mat-raised-button {
-  margin-right: 8px;
+.form-container {
+  flex: 1;
 }
 
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
+.table-container {
+  flex: 1.5;
+  overflow-x: auto;
 }
 
-.full-width {
-  grid-column: span 2;
-}
-@media (max-width: 600px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
+mat-form-field {
+  padding: 5px;
 }
 
+.headers{
+  font-weight: 400;
+  font-size: large;
+}
+.truncate-cell {
+  max-width: 60px; /* feel free to include any other value */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

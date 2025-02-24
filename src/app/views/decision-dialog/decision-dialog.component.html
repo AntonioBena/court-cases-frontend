@@ -1,0 +1,39 @@
+<h1 mat-dialog-title>Create New Decision</h1>
+
+<mat-dialog-content>
+  <form [formGroup]="createForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Decision Label</mat-label>
+      <input matInput formControlName="decisionLabel" required />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Decision Description</mat-label>
+      <textarea matInput formControlName="decisionDescription"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Decision Type</mat-label>
+
+
+      <mat-select formControlName="decisionType" required>
+        <mat-option *ngFor="let type of availableDecisionTypes" [value]="type">
+          {{ decisionTypeLabels[type] }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Decision Date</mat-label>
+      <input matInput formControlName="decisionDate" [matDatepicker]="picker">
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+  </form>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!createForm.valid" (click)="createNewDecision()">Create New Case</button>
+  </div>
+</mat-dialog-content>

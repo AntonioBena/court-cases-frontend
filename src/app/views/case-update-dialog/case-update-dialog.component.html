@@ -79,7 +79,7 @@
 
       <ng-container matColumnDef="decisionType">
         <th mat-header-cell *matHeaderCellDef> Type </th>
-        <td mat-cell *matCellDef="let decision"> {{ decision.decisionType }} </td>
+        <td mat-cell *matCellDef="let decision"> {{ mapDecisionType(decision.decisionType) }} </td>
       </ng-container>
 
       <ng-container matColumnDef="decisionDate">

@@ -192,6 +192,14 @@ export class CaseUpdateDialogComponent implements OnInit {
         }
   }
 
+  mapDecisionType(option: string): string {
+    if (option === 'JUDGMENT') {
+      return 'Judgment';
+    } else {
+      return 'Settlement';
+    }
+  }
+
   getDecisions(): DecisionDto[] {
     return this.caseDetail.decisions;
   }

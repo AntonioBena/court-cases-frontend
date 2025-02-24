@@ -22,21 +22,6 @@ export class CaseService{
       return this.http.get<CourtCaseDto[]>(`${this.baseUrl}`, {params});
     }
 
-
-      // public createDecision(caseLabel: string, decision: DecisionDto): Observable<DecisionDto> {
-      //   let params = new HttpParams().set("caseLabel", caseLabel);
-
-      //   return this.http.post<DecisionDto>(`${this.baseUrl}/create`, decision, { params });
-      // }
-
-
-//     public ResponseEntity<PageResponse<CourtCaseDto>> getCases(
-//       @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-//       @RequestParam(name = "size", defaultValue = "10", required = false) int size
-// ) {
-//   return ResponseEntity.ok(courtCaseService.getAllDisplayableCases(page, size));
-// }
-
     public createCase(newCase: CaseRequest): Observable<any>{
       return this.http.post<any>(`${this.baseUrl}/create`, newCase);
     }
@@ -44,8 +29,5 @@ export class CaseService{
     public updateCase(newCase: CaseRequest): Observable<any>{
       return this.http.post<any>(`${this.baseUrl}/update`, newCase);
     }
-
-
-
 
 }

@@ -22,6 +22,16 @@ export class CaseService{
       return this.http.get<CourtCaseDto[]>(`${this.baseUrl}`, {params});
     }
 
+    public filterCases(page: number, size: number, isDesc: boolean, caseLabel: string, courtName: string): Observable<CourtCaseDto[]>{
+      let params = new HttpParams()
+      .set("page", page)
+      .set('size', size)
+      .set('isDesc', isDesc)
+      .set('caseLabel', caseLabel)
+      .set('courtName', courtName);
+        return this.http.get<CourtCaseDto[]>(`${this.baseUrl}/by-filter`, {params});
+      }
+
     public createCase(newCase: CaseRequest): Observable<any>{
       return this.http.post<any>(`${this.baseUrl}/create`, newCase);
     }

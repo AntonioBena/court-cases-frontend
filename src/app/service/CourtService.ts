@@ -14,7 +14,7 @@ export class CourtService{
   }
 
   public getAllCourts(): Observable<CourtDto[]>{
-    return this.http.get<CourtDto[]>(`${this.baseUrl}`); //TODO not implemented in backend yet
+    return this.http.get<CourtDto[]>(`${this.baseUrl}`);
   }
 
   public createCourt(courtRequest: CourtRequest): Observable<CourtDto>{
@@ -22,8 +22,6 @@ export class CourtService{
   }
 
   public updateCourt(courtRequest: CourtRequest): Observable<CourtDto>{
-    return this.http.put<CourtDto>(`${this.baseUrl}/update`, courtRequest); //TODO not implemented yet in backend
+    return this.http.put<CourtDto>(`${this.baseUrl}/update`, courtRequest);
   }
-
-
 }

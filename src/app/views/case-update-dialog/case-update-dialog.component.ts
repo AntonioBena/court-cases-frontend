@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, ViewChild } from '@angular/core';
 import { CourtCaseDto } from '../../models/CourtCaseDto';
-import { CaseDetailsDialogComponent } from '../case-details-dialog/case-details-dialog.component';
 import {
   MAT_DIALOG_DATA,
   MatDialog,

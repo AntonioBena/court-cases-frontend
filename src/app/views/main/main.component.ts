@@ -18,7 +18,6 @@ import {
 import { MatSortModule } from '@angular/material/sort';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
-import { CaseDetailsDialogComponent } from '../case-details-dialog/case-details-dialog.component';
 
 import {
   MatDialog,
@@ -65,40 +64,75 @@ export class MainComponent implements OnInit {
   dataSourceWithPageSize = new MatTableDataSource(this.dataSource.data);
   selection = new SelectionModel<CourtCaseDto>(true, []);
 
+
+
   constructor(
     private dialog: MatDialog,
     private tokenService: TokenService,
     private router: Router,
     private toastr: ToastrService,
-    private caseService: CaseService,
-    private cdr: ChangeDetectorRef
+    private caseService: CaseService
   ) {}
-  currentPage!: number;
-  totalElements!: number;
+
+  totalElements = 0;
+  loadedPages = new Map<number, any[]>();
+  pageSize = 3;
+  pageIndex=0;
+
   ngOnInit(): void {
     this.fetchAllCases(0, 3);
   }
 
-  onPaginateChange(event: any) {
-    this.fetchAllCases(event.pageIndex, event.pageSize);
+  updateTableData() {
+    let allData: any[] = [];
+    Array.from(this.loadedPages.values()).forEach((data) => {
+      allData = [...allData, ...data];
+    });
+
+    this.dataSource.data = allData;
+    this.dataSource.paginator = this.paginator;
+  }
+
+  onPaginateChange(event: PageEvent) {
+    const nextPage = event.pageIndex;
+    this.fetchAllCases(nextPage, this.pageSize);
   }
 
   async fetchAllCases(page: number, size: number) {
+    if (this.loadedPages.has(page)) {
+      this.updateTableData();
+      return;
+    }
+
     try {
       const response: any = await lastValueFrom(
         this.caseService.getAllCases(page, size)
       );
-      console.log(JSON.stringify(response));
       if (response && response.content) {
-        this.dataSource.data = response.content;
-
+        console.log(response.content)
         this.totalElements = response.totalElements;
-        this.currentPage = page;
-        this.dataSource.paginator = this.paginator;
+        this.loadedPages.set(page, response.content);
+        this.updateTableData();
       } else {
-        console.error('Invalid data format');
+        console.error("Invalid data format");
       }
     } catch (error: any) {
+      console.error("Error:", error);
+    }
+  }
+
+  async fetchCasesByFilter(page: number, size: number, isDesc: boolean, caseLabel: string, courtName: string){
+    try{
+      const response: any = await lastValueFrom(
+        this.caseService.filterCases(page, size, isDesc, caseLabel, courtName)
+      );
+      console.log(JSON.stringify(response));
+      if (response && response.content){
+
+      }else {
+        console.error('Invalid data format');
+      }
+    }catch (error: any) {
       if (error.status === 400) {
         this.showToast('error', 'Please check the data format.');
       }

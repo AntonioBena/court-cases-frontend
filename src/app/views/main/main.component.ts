@@ -41,7 +41,7 @@ import { ChangeDetectorRef } from '@angular/core';
     MatToolbarModule,
     MatCard,
     MatCardContent,
-    MatMenuModule,
+    MatMenuModule
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntl }],
   templateUrl: './main.component.html',
@@ -75,27 +75,34 @@ export class MainComponent implements OnInit {
   ) {}
 
   totalElements = 0;
-  loadedPages = new Map<number, any[]>();
   pageSize = 3;
-  pageIndex=0;
+  pageIndex = 0;
+  loadedPages = new Map<number, any[]>();
+
 
   ngOnInit(): void {
-    this.fetchAllCases(0, 3);
+    this.fetchAllCases(0, this.pageSize);
   }
 
   updateTableData() {
     let allData: any[] = [];
-    Array.from(this.loadedPages.values()).forEach((data) => {
+    this.loadedPages.forEach((data) => {
       allData = [...allData, ...data];
     });
-
     this.dataSource.data = allData;
     this.dataSource.paginator = this.paginator;
+    if (this.paginator) {
+      this.paginator.length = this.totalElements;
+    }
   }
 
   onPaginateChange(event: PageEvent) {
-    const nextPage = event.pageIndex;
+    let nextPage = 0;
+    event.previousPageIndex = nextPage;
+    nextPage = event.pageIndex;
+    this.pageIndex = nextPage;
     this.fetchAllCases(nextPage, this.pageSize);
+    console.log(event)
   }
 
   async fetchAllCases(page: number, size: number) {
@@ -103,15 +110,16 @@ export class MainComponent implements OnInit {
       this.updateTableData();
       return;
     }
-
     try {
       const response: any = await lastValueFrom(
         this.caseService.getAllCases(page, size)
       );
       if (response && response.content) {
-        console.log(response.content)
-        this.totalElements = response.totalElements;
+        console.log(response)
         this.loadedPages.set(page, response.content);
+        this.totalElements = response.totalElements;
+        this.pageIndex = page;
+
         this.updateTableData();
       } else {
         console.error("Invalid data format");

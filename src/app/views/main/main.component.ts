@@ -9,7 +9,12 @@ import { CaseService } from '../../service/CaseService';
 import { catchError, lastValueFrom, throwError } from 'rxjs';
 import { CourtCaseDto } from '../../models/CourtCaseDto';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  MatPaginatorIntl,
+  MatPaginatorModule,
+  PageEvent,
+} from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatCard, MatCardContent } from '@angular/material/card';
 import { MatMenuModule } from '@angular/material/menu';
@@ -24,6 +29,7 @@ import { CaseUpdateDialogComponent } from '../case-update-dialog/case-update-dia
 import { CaseCreateComponent } from '../case-create/case-create.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { PaginatorIntl } from '../../service/PaginatorIntl';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-main',
@@ -38,9 +44,7 @@ import { PaginatorIntl } from '../../service/PaginatorIntl';
     MatCardContent,
     MatMenuModule,
   ],
-  providers: [
-    {provide: MatPaginatorIntl, useClass: PaginatorIntl}
-  ],
+  providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntl }],
   templateUrl: './main.component.html',
   styleUrl: './main.component.css',
 })
@@ -55,7 +59,6 @@ export class MainComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   ngAfterViewInit() {
-    //this.dataSource.paginator = this.paginator;
   }
 
   public dataSource = new MatTableDataSource<CourtCaseDto>();
@@ -67,67 +70,61 @@ export class MainComponent implements OnInit {
     private tokenService: TokenService,
     private router: Router,
     private toastr: ToastrService,
-    private caseService: CaseService
-  ) {
-  }
-
-
+    private caseService: CaseService,
+    private cdr: ChangeDetectorRef
+  ) {}
+  currentPage!: number;
+  totalElements!: number;
   ngOnInit(): void {
-    this.fetchAllCases(0, 5);
+    this.fetchAllCases(0, 3);
   }
-
-  currentPage=0;
 
   onPaginateChange(event: any) {
-this.currentPage = event.pageIndex;
-
-   const pageIndex = event.pageIndex;
-     const pageSize = event.pageSize;
-
-    // console.log(`Navigating to Page: ${pageIndex}, Page Size: ${pageSize}`);
-
-    // this.fetchAllCases(pageIndex, pageSize);
+    this.fetchAllCases(event.pageIndex, event.pageSize);
   }
 
-async fetchAllCases(page: number, size: number) {
-  try {
-    const response: any = await lastValueFrom(this.caseService.getAllCases(page, size));
-    console.log("resp" + JSON.stringify(response));
-    if (response && response.content) {
-      this.dataSource.data = response.content;
-      console.log(`Paginator Updated: totalElements=${response.totalElements}, pageIndex=${response.number}`);
-      this.dataSource._updateChangeSubscription();
+  async fetchAllCases(page: number, size: number) {
+    try {
+      const response: any = await lastValueFrom(
+        this.caseService.getAllCases(page, size)
+      );
+      console.log(JSON.stringify(response));
+      if (response && response.content) {
+        this.dataSource.data = response.content;
 
-      this.dataSource.paginator = this.paginator;
-
-    } else {
-      console.error('Invalid data format');
+        this.totalElements = response.totalElements;
+        this.currentPage = page;
+        this.dataSource.paginator = this.paginator;
+      } else {
+        console.error('Invalid data format');
+      }
+    } catch (error: any) {
+      if (error.status === 400) {
+        this.showToast('error', 'Please check the data format.');
+      }
+      console.error('Error:', error);
     }
-  } catch (error: any) {
-    if (error.status === 400) {
-      this.showToast('error', 'Please check the data format.');
-    }
-    console.error('Error:', error);
   }
-}
 
   viewCaseDetails(caseItem: CourtCaseDto) {
     console.log('Updating case ID:', caseItem);
-    this.dialog.open(CaseUpdateDialogComponent, {
-      width: 'auto',
-      maxWidth: 'none',
-      data: {
-        id: caseItem.id,
-        caseLabel: caseItem.caseLabel,
-        caseStatus: caseItem.caseStatus,
-        description: caseItem.description,
-        court: caseItem.court,
-        decisions: caseItem.decisions,
-        resolvingDecisionLabel: caseItem.resolvingDecisionLabel,
-        isEdit: false
-      },
-    }).afterClosed().subscribe(()=> {
-    })
+    this.dialog
+      .open(CaseUpdateDialogComponent, {
+        width: 'auto',
+        maxWidth: 'none',
+        data: {
+          id: caseItem.id,
+          caseLabel: caseItem.caseLabel,
+          caseStatus: caseItem.caseStatus,
+          description: caseItem.description,
+          court: caseItem.court,
+          decisions: caseItem.decisions,
+          resolvingDecisionLabel: caseItem.resolvingDecisionLabel,
+          isEdit: false,
+        },
+      })
+      .afterClosed()
+      .subscribe(() => {});
   }
 
   createCase() {
@@ -147,29 +144,32 @@ async fetchAllCases(page: number, size: number) {
 
   updateCase(caseItem: CourtCaseDto) {
     console.log('Updating case ID:', caseItem);
-    this.dialog.open(CaseUpdateDialogComponent, {
-      width: 'auto',
-      maxWidth: 'none',
-      data: {
-        id: caseItem.id,
-        caseLabel: caseItem.caseLabel,
-        caseStatus: caseItem.caseStatus,
-        description: caseItem.description,
-        court: caseItem.court,
-        decisions: caseItem.decisions,
-        resolvingDecisionLabel: caseItem.resolvingDecisionLabel,
-        isEdit: true
-      },
-    }).afterClosed().subscribe(()=> {
-      this.fetchAllCases(0, 10);
-    })
+    this.dialog
+      .open(CaseUpdateDialogComponent, {
+        width: 'auto',
+        maxWidth: 'none',
+        data: {
+          id: caseItem.id,
+          caseLabel: caseItem.caseLabel,
+          caseStatus: caseItem.caseStatus,
+          description: caseItem.description,
+          court: caseItem.court,
+          decisions: caseItem.decisions,
+          resolvingDecisionLabel: caseItem.resolvingDecisionLabel,
+          isEdit: true,
+        },
+      })
+      .afterClosed()
+      .subscribe(() => {
+        this.fetchAllCases(0, 10);
+      });
   }
 
-  mapStatus(option: string): string{
-    if(option === 'IN_PROGRESS'){
-      return 'In progress'
-    }else{
-      return 'Solved'
+  mapStatus(option: string): string {
+    if (option === 'IN_PROGRESS') {
+      return 'In progress';
+    } else {
+      return 'Solved';
     }
   }
 

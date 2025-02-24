@@ -81,11 +81,11 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
         <mat-paginator class="paginator"
-        [length]="6"
+        [length]="totalElements"
         [pageSize]="3"
         [showFirstLastButtons]="true"
         [pageSizeOptions]="[3, 6]"
-        [pageIndex]="0"
+        [pageIndex]="currentPage"
         (page)="onPaginateChange($event)">
       </mat-paginator>
 

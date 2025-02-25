@@ -61,10 +61,6 @@ export class MainComponent implements OnInit {
   }
 
   public dataSource = new MatTableDataSource<CourtCaseDto>();
-  dataSourceWithPageSize = new MatTableDataSource(this.dataSource.data);
-  selection = new SelectionModel<CourtCaseDto>(true, []);
-
-
 
   constructor(
     private dialog: MatDialog,
@@ -76,7 +72,7 @@ export class MainComponent implements OnInit {
 
   totalElements = 0;
   pageSize = 3;
-  loadedPages = new Map<number, any[]>();
+  currentPage = -1;
 
   ngAfterView(): void{
     this.dataSource.paginator = this.paginator;
@@ -87,32 +83,23 @@ export class MainComponent implements OnInit {
     this.fetchAllCases(0, this.pageSize);
   }
 
-  updateTableData() {
-    let allData: any[] = [];
-  this.loadedPages.forEach((data) => {
-    allData = [...allData, ...data];
-  });
-   this.dataSource.data = allData;
-}
-
   onPaginateChange(event: PageEvent) {
-    this.fetchAllCases(event.pageIndex, this.pageSize);
+    this.fetchAllCases(event.pageIndex, event.pageSize)
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
   }
 
   async fetchAllCases(page: number, size: number) {
-   if (this.loadedPages.has(page)) {
-     this.updateTableData();
-      return;
-    }
     try {
       const response: any = await lastValueFrom(
         this.caseService.getAllCases(page, size)
       );
       if (response && response.content) {
         console.log(response)
-        this.loadedPages.set(page, response.content);
+
         this.totalElements = response.totalElements;
-         this.updateTableData();
+
+        this.dataSource = response.content;
       } else {
         console.error("Invalid data format");
       }
@@ -172,7 +159,7 @@ export class MainComponent implements OnInit {
       .afterClosed()
       .subscribe((result) => {
         console.log('closed create dialog');
-        this.fetchAllCases(0, 10);
+        this.fetchAllCases(this.currentPage, this.pageSize);
       });
   }
 
@@ -195,7 +182,7 @@ export class MainComponent implements OnInit {
       })
       .afterClosed()
       .subscribe(() => {
-        this.fetchAllCases(0, 10);
+        this.fetchAllCases(this.currentPage, this.pageSize);
       });
   }
 

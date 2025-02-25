@@ -60,7 +60,7 @@ export class LoginComponent {
               () => new Error('Login error '+JSON.stringify(error)));
           })
         ).subscribe(data => {
-          console.log('Login Successful:', data);
+          console.log('Login Successful:');
           this.tokenService.token = data.token as string;
           this.router.navigate(['/main']);
         })

@@ -23,16 +23,28 @@ import {
   MatDialog,
   MatDialogRef,
   MatDialogConfig,
+  MatDialogModule,
 } from '@angular/material/dialog';
 import { CaseUpdateDialogComponent } from '../case-update-dialog/case-update-dialog.component';
 import { CaseCreateComponent } from '../case-create/case-create.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { PaginatorIntl } from '../../service/PaginatorIntl';
 import { ChangeDetectorRef } from '@angular/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatInputModule } from '@angular/material/input';
+import { atLeastOneFieldValidator } from '../../validators/atLeastOneFieldValidator';
 
 @Component({
   selector: 'app-main',
   imports: [
+    CommonModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
@@ -41,7 +53,12 @@ import { ChangeDetectorRef } from '@angular/core';
     MatToolbarModule,
     MatCard,
     MatCardContent,
-    MatMenuModule
+    MatMenuModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: PaginatorIntl }],
   templateUrl: './main.component.html',
@@ -57,38 +74,121 @@ export class MainComponent implements OnInit {
   ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
 
   public dataSource = new MatTableDataSource<CourtCaseDto>();
-  private cache = new Map<string, { totalElements: number; data: CourtCaseDto[] }>();
+  private cache = new Map<
+    string,
+    { totalElements: number; data: CourtCaseDto[] }
+  >();
+
+  searchForm: FormGroup;
 
   constructor(
+    private fb: FormBuilder,
     private dialog: MatDialog,
     private tokenService: TokenService,
     private router: Router,
     private toastr: ToastrService,
     private caseService: CaseService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.searchForm = this.fb.group({
+      caseLabel: ['', []],
+      courtName: ['', []]
+    },
+    { validators: atLeastOneFieldValidator('caseLabel', 'courtName') }
+  );
+  }
 
   totalElements = 0;
   pageSize = 4;
-  currentPage = -1;
+  currentPage = 0;
+  isSearchActive: boolean = false;
 
-  ngAfterView(): void{
+  ngAfterView(): void {
     this.dataSource.paginator = this.paginator;
   }
-
 
   ngOnInit(): void {
     this.fetchAllCases(0, this.pageSize);
   }
 
   onPaginateChange(event: PageEvent) {
-    this.fetchAllCases(event.pageIndex, event.pageSize)
+    this.fetchAllCases(event.pageIndex, event.pageSize);
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
+  }
+
+  onSearchClick() {
+    if (this.isSearchActive) {
+      this.resetSearch();
+    } else {
+      this.runAdvancedSearch();
+    }
+  }
+
+  runAdvancedSearch() {
+    if (this.searchForm.valid) {
+      this.cache.clear();
+      this.dataSource.data = [];
+      const caseLabel = this.searchForm.get('caseLabel')?.value;
+      const courtName = this.searchForm.get('courtName')?.value;
+
+      this.fetcByFilter(this.currentPage, this.pageSize, false, caseLabel, courtName);
+      this.isSearchActive = true;
+    }
+  }
+
+  resetSearch() {
+    this.searchForm.reset();
+    this.cache.clear();
+    this.dataSource.data = [];
+
+    this.fetchAllCases(this.currentPage, this.pageSize);
+
+    this.isSearchActive = false;
+  }
+
+  async fetcByFilter(page: number, size: number, isDesc: boolean, caseLabel: string, courtName: string) {
+    const cacheKey = `${page}-${size}`;
+    if (this.cache.has(cacheKey)) {
+      console.log(`Using cached data for page: ${page}, size: ${size}`);
+      const cachedData = this.cache.get(cacheKey);
+      if (cachedData) {
+        this.totalElements = cachedData.totalElements;
+        this.dataSource.data = [...cachedData.data];
+        this.cdr.detectChanges();
+      }
+      return;
+    }
+    try {
+      console.log(
+        `🚀 Fetching data from backend for page: ${page}, size: ${size}`
+      );
+      const response: any = await lastValueFrom(
+        this.caseService.filterCases(page, size, isDesc, caseLabel, courtName)
+      );
+
+      if(response.totalElements === 0){
+        this.showToast('info', 'Could not find')
+      }
+
+      if (response && response.content) {
+        console.log(response);
+        this.totalElements = response.totalElements;
+        this.dataSource.data = [...response.content];
+        this.cdr.detectChanges();
+        this.cache.set(cacheKey, {
+          totalElements: response.totalElements,
+          data: response.content,
+        });
+      } else {
+        console.error('Invalid data format');
+      }
+    } catch (error: any) {
+      console.error('Error fetching data:', error);
+    }
   }
 
   async fetchAllCases(page: number, size: number) {
@@ -104,38 +204,27 @@ export class MainComponent implements OnInit {
       return;
     }
     try {
-      console.log(`🚀 Fetching data from backend for page: ${page}, size: ${size}`);
-      const response: any = await lastValueFrom(this.caseService.getAllCases(page, size));
+      console.log(
+        `🚀 Fetching data from backend for page: ${page}, size: ${size}`
+      );
+      const response: any = await lastValueFrom(
+        this.caseService.getAllCases(page, size)
+      );
 
       if (response && response.content) {
+        console.log(response);
         this.totalElements = response.totalElements;
         this.dataSource.data = [...response.content];
         this.cdr.detectChanges();
-        this.cache.set(cacheKey, { totalElements: response.totalElements, data: response.content });
+        this.cache.set(cacheKey, {
+          totalElements: response.totalElements,
+          data: response.content,
+        });
       } else {
         console.error('Invalid data format');
       }
     } catch (error: any) {
       console.error('Error fetching data:', error);
-    }
-  }
-
-  async fetchCasesByFilter(page: number, size: number, isDesc: boolean, caseLabel: string, courtName: string){
-    try{
-      const response: any = await lastValueFrom(
-        this.caseService.filterCases(page, size, isDesc, caseLabel, courtName)
-      );
-      console.log(JSON.stringify(response));
-      if (response && response.content){
-
-      }else {
-        console.error('Invalid data format');
-      }
-    }catch (error: any) {
-      if (error.status === 400) {
-        this.showToast('error', 'Please check the data format.');
-      }
-      console.error('Error:', error);
     }
   }
 
@@ -194,6 +283,9 @@ export class MainComponent implements OnInit {
       })
       .afterClosed()
       .subscribe(() => {
+        if(this.isSearchActive){
+          return;
+        }
         this.cache.clear();
         this.fetchAllCases(this.currentPage, this.pageSize);
       });
@@ -205,10 +297,6 @@ export class MainComponent implements OnInit {
     } else {
       return 'Solved';
     }
-  }
-
-  advancedSearch(){
-
   }
 
   onLogout() {

@@ -13,10 +13,23 @@
 <div class="card-container">
   <mat-card class="card">
     <mat-card-content>
-
       <div class="demo-button-container">
-        <button mat-stroked-button class="demo-button-advanced-search" (click)="advancedSearch()">
-          Advanced Search
+        <div class="form-fields">
+          <form [formGroup]="searchForm">
+            <mat-form-field appearance="outline" class="full-width-form-field-left">
+              <mat-label>Court Name</mat-label>
+              <input matInput formControlName="courtName"  />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width-form-field">
+              <mat-label>Case Label</mat-label>
+              <input matInput formControlName="caseLabel"  />
+            </mat-form-field>
+          </form>
+        </div>
+        <button mat-stroked-button class="demo-button-advanced-search"
+        [disabled]="!searchForm.valid"
+        (click)="onSearchClick()">
+          {{ isSearchActive ? 'Reset' : 'Advanced Search' }}
         </button>
         <button mat-flat-button color="secondary" class="demo-button" (click)="createCase()">
           Add New Case

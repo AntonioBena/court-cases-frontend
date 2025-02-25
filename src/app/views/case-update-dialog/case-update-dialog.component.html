@@ -8,7 +8,7 @@
           <div class="form-grid">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Case Label</mat-label>
-              <input matInput [readonly]="!isEdit" formControlName="caseLabel" />
+              <input matInput [readonly]="true" formControlName="caseLabel" />
               <mat-error *ngIf="caseForm.controls['caseLabel'].hasError('required')">
                 Case Label is required
               </mat-error>

@@ -37,7 +37,7 @@ export class CaseService{
     }
 
     public updateCase(newCase: CaseRequest): Observable<any>{
-      return this.http.post<any>(`${this.baseUrl}/update`, newCase);
+      return this.http.put<any>(`${this.baseUrl}/update`, newCase);
     }
 
 }

@@ -73,7 +73,7 @@ export class MainComponent implements OnInit {
   ) {}
 
   totalElements = 0;
-  pageSize = 3;
+  pageSize = 4;
   currentPage = -1;
 
   ngAfterView(): void{
@@ -93,7 +93,6 @@ export class MainComponent implements OnInit {
 
   async fetchAllCases(page: number, size: number) {
     const cacheKey = `${page}-${size}`;
-
     if (this.cache.has(cacheKey)) {
       console.log(`Using cached data for page: ${page}, size: ${size}`);
       const cachedData = this.cache.get(cacheKey);
@@ -104,22 +103,20 @@ export class MainComponent implements OnInit {
       }
       return;
     }
-
     try {
-      const response: any = await lastValueFrom(
-        this.caseService.getAllCases(page, size)
-      );
+      console.log(`🚀 Fetching data from backend for page: ${page}, size: ${size}`);
+      const response: any = await lastValueFrom(this.caseService.getAllCases(page, size));
+
       if (response && response.content) {
-        console.log(response)
         this.totalElements = response.totalElements;
-        this.dataSource = response.content;
-        this.cache.set(cacheKey, { totalElements: response.totalElements, data: response.content });
+        this.dataSource.data = [...response.content];
         this.cdr.detectChanges();
+        this.cache.set(cacheKey, { totalElements: response.totalElements, data: response.content });
       } else {
-        console.error("Invalid data format");
+        console.error('Invalid data format');
       }
     } catch (error: any) {
-      console.error("Error:", error);
+      console.error('Error fetching data:', error);
     }
   }
 
@@ -173,7 +170,7 @@ export class MainComponent implements OnInit {
       })
       .afterClosed()
       .subscribe((result) => {
-        console.log('closed create dialog');
+        this.cache.clear();
         this.fetchAllCases(this.currentPage, this.pageSize);
       });
   }
@@ -197,6 +194,7 @@ export class MainComponent implements OnInit {
       })
       .afterClosed()
       .subscribe(() => {
+        this.cache.clear();
         this.fetchAllCases(this.currentPage, this.pageSize);
       });
   }

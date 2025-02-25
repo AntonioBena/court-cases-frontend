@@ -77,7 +77,7 @@ export class CaseUpdateDialogComponent implements OnInit {
     pageSizes = [5];
 
   constructor(
-    private fb: FormBuilder, //public dialogRef: MatDialogRef<CaseUpdateDialogComponent>,
+    private fb: FormBuilder,
     private dialogRef: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private toastr: ToastrService,
@@ -112,7 +112,7 @@ export class CaseUpdateDialogComponent implements OnInit {
       description: [this.data.description, Validators.required],
       courtName: [this.data.court.courtName, Validators.required],
       courtAddress: [this.data.court.courtAddress, Validators.required],
-      resolvingDecisionLabel: //[this.data.resolvingDecisionLabel || ''],
+      resolvingDecisionLabel:
       [
         { value: this.data.resolvingDecisionLabel || '', disabled: !this.isEdit }
       ]
@@ -165,8 +165,6 @@ export class CaseUpdateDialogComponent implements OnInit {
           ccourt.id = this.data.court.id;
           ccourt.courtName = this.caseForm.value.courtName;
           ccourt.courtAddress = this.caseForm.value.courtAddress;
-
-
 
           newCaseRequest.courtCaseDto = ncase;
           newCaseRequest.courtDto = ccourt;

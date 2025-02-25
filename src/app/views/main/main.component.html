@@ -77,8 +77,8 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
-        <mat-paginator class="paginator" [length]="totalElements" [pageSize]="3" [showFirstLastButtons]="true"
-          [pageSizeOptions]="[3, 6]"  (page)="onPaginateChange($event)">
+        <mat-paginator class="paginator" [length]="totalElements" [showFirstLastButtons]="true"
+          [pageSizeOptions]="[pageSize]"  (page)="onPaginateChange($event)">
         </mat-paginator>
         <!-- [pageIndex]="pageIndex" -->
       </div>

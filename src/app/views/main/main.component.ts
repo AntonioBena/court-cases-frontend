@@ -61,13 +61,15 @@ export class MainComponent implements OnInit {
   }
 
   public dataSource = new MatTableDataSource<CourtCaseDto>();
+  private cache = new Map<string, { totalElements: number; data: CourtCaseDto[] }>();
 
   constructor(
     private dialog: MatDialog,
     private tokenService: TokenService,
     private router: Router,
     private toastr: ToastrService,
-    private caseService: CaseService
+    private caseService: CaseService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   totalElements = 0;
@@ -90,16 +92,29 @@ export class MainComponent implements OnInit {
   }
 
   async fetchAllCases(page: number, size: number) {
+    const cacheKey = `${page}-${size}`;
+
+    if (this.cache.has(cacheKey)) {
+      console.log(`Using cached data for page: ${page}, size: ${size}`);
+      const cachedData = this.cache.get(cacheKey);
+      if (cachedData) {
+        this.totalElements = cachedData.totalElements;
+        this.dataSource.data = [...cachedData.data];
+        this.cdr.detectChanges();
+      }
+      return;
+    }
+
     try {
       const response: any = await lastValueFrom(
         this.caseService.getAllCases(page, size)
       );
       if (response && response.content) {
         console.log(response)
-
         this.totalElements = response.totalElements;
-
         this.dataSource = response.content;
+        this.cache.set(cacheKey, { totalElements: response.totalElements, data: response.content });
+        this.cdr.detectChanges();
       } else {
         console.error("Invalid data format");
       }

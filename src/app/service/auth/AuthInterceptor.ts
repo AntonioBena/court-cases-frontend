@@ -7,7 +7,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const token = localStorage.getItem("token");
 
-  console.log("token from local storage is= " + token);
+  //console.log("token from local storage is= " + token);
 
   const router = inject(Router);
 

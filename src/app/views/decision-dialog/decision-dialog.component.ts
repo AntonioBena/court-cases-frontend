@@ -38,8 +38,8 @@ export class DecisionDialogComponent {
   ];
 
   decisionTypeLabels: Record<DecisionType, string> = {
-    [DecisionType.JUDGMENT]: 'Presuda',
-    [DecisionType.RULING]: 'Rješenje',
+    [DecisionType.JUDGMENT]: 'JUDGMENT',
+    [DecisionType.RULING]: 'Settlement',
   };
 
   createForm: FormGroup;

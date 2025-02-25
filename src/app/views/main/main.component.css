@@ -42,6 +42,10 @@
   margin-bottom: 10px;
 }
 
+.demo-button-advanced-search{
+  margin-right: 10px;
+}
+
 .table-container {
   width: 100%; /* Ensure the table doesn't overflow */
   overflow-x: auto; /* Allow horizontal scrolling if needed */

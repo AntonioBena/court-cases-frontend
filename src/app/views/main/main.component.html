@@ -15,7 +15,10 @@
     <mat-card-content>
 
       <div class="demo-button-container">
-        <button mat-flat-button color="primary" class="demo-button" (click)="createCase()">
+        <button mat-stroked-button class="demo-button-advanced-search" (click)="advancedSearch()">
+          Advanced Search
+        </button>
+        <button mat-flat-button color="secondary" class="demo-button" (click)="createCase()">
           Add New Case
         </button>
       </div>
@@ -75,8 +78,9 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
         <mat-paginator class="paginator" [length]="totalElements" [pageSize]="3" [showFirstLastButtons]="true"
-          [pageSizeOptions]="[3, 6]" [pageIndex]="pageIndex" (page)="onPaginateChange($event)">
+          [pageSizeOptions]="[3, 6]"  (page)="onPaginateChange($event)">
         </mat-paginator>
+        <!-- [pageIndex]="pageIndex" -->
       </div>
     </mat-card-content>
   </mat-card>

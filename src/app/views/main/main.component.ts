@@ -76,8 +76,11 @@ export class MainComponent implements OnInit {
 
   totalElements = 0;
   pageSize = 3;
-  pageIndex = 0;
   loadedPages = new Map<number, any[]>();
+
+  ngAfterView(): void{
+    this.dataSource.paginator = this.paginator;
+  }
 
 
   ngOnInit(): void {
@@ -86,28 +89,19 @@ export class MainComponent implements OnInit {
 
   updateTableData() {
     let allData: any[] = [];
-    this.loadedPages.forEach((data) => {
-      allData = [...allData, ...data];
-    });
-    this.dataSource.data = allData;
-    this.dataSource.paginator = this.paginator;
-    if (this.paginator) {
-      this.paginator.length = this.totalElements;
-    }
-  }
+  this.loadedPages.forEach((data) => {
+    allData = [...allData, ...data];
+  });
+   this.dataSource.data = allData;
+}
 
   onPaginateChange(event: PageEvent) {
-    let nextPage = 0;
-    event.previousPageIndex = nextPage;
-    nextPage = event.pageIndex;
-    this.pageIndex = nextPage;
-    this.fetchAllCases(nextPage, this.pageSize);
-    console.log(event)
+    this.fetchAllCases(event.pageIndex, this.pageSize);
   }
 
   async fetchAllCases(page: number, size: number) {
-    if (this.loadedPages.has(page)) {
-      this.updateTableData();
+   if (this.loadedPages.has(page)) {
+     this.updateTableData();
       return;
     }
     try {
@@ -118,9 +112,7 @@ export class MainComponent implements OnInit {
         console.log(response)
         this.loadedPages.set(page, response.content);
         this.totalElements = response.totalElements;
-        this.pageIndex = page;
-
-        this.updateTableData();
+         this.updateTableData();
       } else {
         console.error("Invalid data format");
       }
@@ -213,6 +205,10 @@ export class MainComponent implements OnInit {
     } else {
       return 'Solved';
     }
+  }
+
+  advancedSearch(){
+
   }
 
   onLogout() {

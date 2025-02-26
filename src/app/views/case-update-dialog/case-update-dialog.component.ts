@@ -101,10 +101,6 @@ export class CaseUpdateDialogComponent implements OnInit {
     [CaseStatus.RESOLVED]: 'Solved',
   };
 
-  //TODO      Forma za ažuriranje podataka o predmetu mora imati i mogućnost upisivanja nove odluke na
-  // TODO     predmet i mogućnost prebacivanja predmeta u status „riješen“ uz posebno označavanje odluke
-  // TODO     kojom je predmet riješen.
-
   private createForm(): void {
     this.caseForm = this.fb.group({
       caseLabel: [this.data.caseLabel, Validators.required],
